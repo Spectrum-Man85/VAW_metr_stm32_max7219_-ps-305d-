@@ -1,22 +1,24 @@
-# Прошивка VAW Meter
+# VAW Meter firmware
 
-Это каталог проекта PlatformIO для STM32F103C8T6, MAX7219 и INA226.
+**English** · [Русский](README.ru.md)
 
-**[Главная страница проекта с фотографиями и схемами →](../README.md)**
+This is the PlatformIO project directory for STM32F103C8T6, MAX7219, and INA226.
 
-| Материал | Ссылка |
+**[Project overview, photographs, and schematics →](../README.md)**
+
+| Topic | Guide |
 |---|---|
-| Распиновка и схемы | [Аппаратная часть](../docs/hardware.md) |
-| Настройка измерений | [Калибровка](../docs/calibration.md) |
-| Температура, вентиляторы и другие параметры | [Меню настроек](../docs/settings.md) |
+| Pinout and schematics | [Hardware](../docs/en/hardware.md) |
+| Measurement adjustment | [Calibration](../docs/en/calibration.md) |
+| Temperatures, fans, and other parameters | [Settings menu](../docs/en/settings.md) |
 
-Из этого каталога:
+Run these commands from this directory:
 
 ```bash
 pio run
 pio run --target upload
 ```
 
-Текущий программатор — J-Link, среда сборки — `genericSTM32F103C8`.
+The current programmer is J-Link; the build environment is `genericSTM32F103C8`.
 
-Главная документация сверена с текущими исходниками. Старые `Readme_RU.txt` и `меню настроек.txt` оставлены как исходные материалы.
+The main documentation reflects the current source code. The older Russian `Readme_RU.txt` and settings text file are retained as source material.

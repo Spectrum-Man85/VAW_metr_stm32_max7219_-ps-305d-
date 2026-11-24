@@ -4,95 +4,97 @@
 
 <h1 align="center">VAW Meter · PS-305D</h1>
 
+<p align="center"><strong>English</strong> · <a href="README.ru.md">Русский</a></p>
+
 <p align="center">
-  <strong>Новая жизнь трансформаторного лабораторного блока питания.</strong><br>
-  Измерение напряжения и тока, многоточечная калибровка и два канала охлаждения — на STM32.
+  <strong>A new life for a transformer-based bench power supply.</strong><br>
+  Voltage and current measurement, multipoint calibration, and two cooling channels — powered by STM32.
 </p>
 
 <p align="center">
-  <a href="#features">Возможности</a> ·
-  <a href="#gallery">Фотографии</a> ·
-  <a href="#hardware">Схемы</a> ·
-  <a href="#build">Сборка</a> ·
-  <a href="docs/calibration.md">Калибровка</a> ·
-  <a href="docs/settings.md">Настройки</a>
+  <a href="#features">Features</a> ·
+  <a href="#gallery">Photos</a> ·
+  <a href="#hardware">Schematics</a> ·
+  <a href="#build">Build</a> ·
+  <a href="docs/en/calibration.md">Calibration</a> ·
+  <a href="docs/en/settings.md">Settings</a>
 </p>
 
 ---
 
-Проект модуля для модернизации лабораторных блоков питания трансформаторного типа, в том числе семейства **PS-305D**. Вместо штатной простой индикации используются восемь семисегментных разрядов под управлением MAX7219, измерительный модуль INA226 и энкодер для настройки.
+A measurement and control module for upgrading transformer-based laboratory power supplies, including the **PS-305D** family. It replaces basic factory readouts with eight seven-segment digits driven by a MAX7219, an INA226 measurement module, and a rotary encoder for configuration.
 
-Микроконтроллер также управляет двумя вентиляторами по температуре радиатора и трансформатора и формирует сигналы переключения обмоток. Проект можно адаптировать к другому блоку питания, сверив силовую часть, распиновку и параметры измерительного тракта.
+The STM32 also controls two fans based on heatsink and transformer temperatures and provides transformer winding relay outputs. The project can be adapted to other power supplies after checking the power circuitry, pin assignments, and measurement hardware.
 
 <a id="gallery"></a>
-## Прототип в работе
+## The prototype
 
 <table>
   <tr>
-    <td width="50%" align="center"><a href="platformio/20261124_132426.jpg"><img src="platformio/20261124_132426.jpg" alt="Работающий индикатор напряжения и тока с энкодером" width="100%"></a></td>
-    <td width="50%" align="center"><a href="platformio/20261124_132511.jpg"><img src="platformio/20261124_132511.jpg" alt="Монтаж прототипа: STM32 Blue Pill, INA226 и MAX7219" width="100%"></a></td>
+    <td width="50%" align="center"><a href="platformio/20261124_132426.jpg"><img src="platformio/20261124_132426.jpg" alt="Working voltage and current display with rotary encoder" width="100%"></a></td>
+    <td width="50%" align="center"><a href="platformio/20261124_132511.jpg"><img src="platformio/20261124_132511.jpg" alt="Prototype assembly with STM32 Blue Pill, INA226, and MAX7219" width="100%"></a></td>
   </tr>
   <tr>
-    <td align="center">Индикация и энкодер</td>
-    <td align="center">Монтаж электронного модуля</td>
+    <td align="center">Display and rotary encoder</td>
+    <td align="center">Electronic module assembly</td>
   </tr>
 </table>
 
-Фотографии и схемы взяты из файлов этого проекта. Нажмите на изображение, чтобы открыть оригинал.
+These photographs and schematics are included in the project. Click an image to open the original.
 
 <a id="features"></a>
-## Что умеет модуль
+## Features
 
-| Измерения | Калибровка | Управление |
+| Measurement | Calibration | Control |
 |---|---|---|
-| INA226: напряжение и реальный ток | Отдельный глобальный коэффициент каждого канала | Энкодер и меню из 19 параметров |
-| Адаптивные медианные фильтры | По 100 локальных коэффициентов на канал | Два датчика DS18B20 и два вентилятора |
-| Автоматическое положение десятичной точки | Интерполяция между коэффициентами | ШИМ охлаждения 25 кГц |
-| Подавление остаточных показаний до 2 мА | Сохранение калибровки во Flash | Релейные выходы и звуковые сигналы |
+| INA226 voltage and actual current readings | A separate global coefficient for each channel | Rotary encoder and a 19-item settings menu |
+| Adaptive median filters | 100 local coefficients per channel | Two DS18B20 sensors and two fans |
+| Automatic decimal point placement | Interpolation between coefficients | 25 kHz fan PWM |
+| Residual current readings up to 2 mA suppressed | Calibration stored in Flash | Relay outputs and audible feedback |
 
-### Основные параметры
+### Main specifications
 
-| Параметр | Текущая реализация |
+| Parameter | Current implementation |
 |---|---|
-| Микроконтроллер | STM32F103C8T6, плата типа Blue Pill |
-| Среда разработки | PlatformIO, Arduino framework, C++ |
-| Измерительный модуль | INA226, адрес I²C `0x40` |
-| Шунт в настройке драйвера | `0,01 Ом`, расчётный максимальный ток `10 А` |
-| Сетка калибровки напряжения | 100 диапазонов по 0,36 В, область 0–36 В |
-| Сетка калибровки тока | 100 диапазонов по 0,1 А, область 0–10 А |
-| Индикация | MAX7219, четыре разряда тока и четыре разряда напряжения |
-| Разрешение индикации | До 0,001 В и 0,001 А; от 10 — два знака после точки |
-| Температурные датчики | 2 × DS18B20 |
-| Выходы вентилятора | 2 канала ШИМ, 25 кГц, диапазон 0–255 |
-| Сохранение параметров | Эмуляция EEPROM во Flash STM32, записи с контрольными суммами |
-| Прошивка и отладка | J-Link в текущем `platformio.ini` |
+| Microcontroller | STM32F103C8T6, Blue Pill-style board |
+| Development environment | PlatformIO, Arduino framework, C++ |
+| Measurement module | INA226, I²C address `0x40` |
+| Driver shunt configuration | `0.01 Ω`, configured maximum current `10 A` |
+| Voltage calibration grid | 100 ranges of 0.36 V, covering 0–36 V |
+| Current calibration grid | 100 ranges of 0.1 A, covering 0–10 A |
+| Display | MAX7219, four current digits and four voltage digits |
+| Display resolution | Up to 0.001 V and 0.001 A; two decimal places at 10 and above |
+| Temperature sensors | 2 × DS18B20 |
+| Fan outputs | Two PWM channels, 25 kHz, values 0–255 |
+| Parameter storage | EEPROM emulation in STM32 Flash, with record checksums |
+| Upload and debugging | J-Link in the current `platformio.ini` |
 
-Разрешение индикации не равно гарантированной точности измерений. Результат зависит от шунта, монтажа, помех и калибровки по эталонному прибору. Сетка калибровки также не определяет допустимые электрические пределы всех компонентов.
+Display resolution is not a guarantee of measurement accuracy. Results depend on the shunt, assembly, electrical noise, and calibration against a reference instrument. The calibration grid does not define the electrical ratings of the hardware components.
 
 <a id="hardware"></a>
-## Схемы и подключение
+## Schematics and connections
 
-В проекте есть три схемы прототипа:
+The project includes three prototype schematics:
 
-| Подключение STM32 | Индикаторы MAX7219 |
+| STM32 connections | MAX7219 display |
 |---|---|
-| [![Подключение STM32 и периферии](platformio/5262779249662302666.jpg)](platformio/5262779249662302666.jpg) | [![Схема двух индикаторов и MAX7219](platformio/5262779249662302663.jpg)](platformio/5262779249662302663.jpg) |
+| [![STM32 and peripheral connections](platformio/5262779249662302666.jpg)](platformio/5262779249662302666.jpg) | [![Two displays connected to MAX7219](platformio/5262779249662302663.jpg)](platformio/5262779249662302663.jpg) |
 
 <details>
-<summary><strong>Показать схему питания</strong></summary>
+<summary><strong>Show the power supply schematic</strong></summary>
 
-[![Раздельное питание контроллера и индикации](platformio/5393225360721251683.jpg)](platformio/5393225360721251683.jpg)
+[![Separate power rails for the controller and display](platformio/5393225360721251683.jpg)](platformio/5393225360721251683.jpg)
 
 </details>
 
-Полная распиновка, назначение разъёмов по коду и пояснения к схемам — в [описании аппаратной части](docs/hardware.md).
+See the [hardware guide](docs/en/hardware.md) for the complete firmware pinout and notes on the original schematics. The images retain their original labels; the pinout and explanations are available in English.
 
 <a id="build"></a>
-## Быстрый старт
+## Quick start
 
-### 1. Откройте проект
+### 1. Open the project
 
-Установите PlatformIO и откройте каталог **`platformio`** — именно в нём находится `platformio.ini`.
+Install PlatformIO and open the **`platformio`** directory, which contains `platformio.ini`.
 
 ```bash
 git clone https://github.com/Spectrum-Man85/VAW_metr_stm32_max7219_-ps-305d-.git
@@ -100,86 +102,88 @@ cd VAW_metr_stm32_max7219_-ps-305d-
 pio run --project-dir platformio
 ```
 
-В конфигурации выбраны плата `genericSTM32F103C8`, платформа `ststm32` и Arduino framework. OneWire подключается через `lib_deps`; остальные используемые модули находятся в проекте или входят в Arduino framework STM32.
+The configuration selects the `genericSTM32F103C8` board, the `ststm32` platform, and the Arduino framework. OneWire is declared in `lib_deps`; the other active modules are included in the project or provided by the STM32 Arduino framework.
 
-### 2. Подключите программатор
+### 2. Connect the programmer
 
-Текущая конфигурация рассчитана на **J-Link**:
+The current configuration uses **J-Link**:
 
 ```bash
 pio run --project-dir platformio --target upload
 ```
 
-Для ST-Link необходимо изменить `upload_protocol` и `debug_tool` на `stlink` в [platformio.ini](platformio/platformio.ini). Само наличие комментария о ST-Link в файле не переключает используемый программатор.
+For ST-Link, change both `upload_protocol` and `debug_tool` to `stlink` in [platformio.ini](platformio/platformio.ini). The existing ST-Link comment alone does not change the selected programmer.
 
-### 3. Настройте измерительный тракт
+### 3. Configure the measurement hardware
 
-Проверьте соответствие шунта настройке `INA226 ina(0.01f, 10.0f)` в [main.cpp](platformio/src/main.cpp), подключение датчиков и выходов. Затем выполните [глобальную и локальную калибровку](docs/calibration.md).
+Check that your shunt matches `INA226 ina(0.01f, 10.0f)` in [main.cpp](platformio/src/main.cpp), and verify the sensor and output wiring. Then perform [global and local calibration](docs/en/calibration.md).
 
-На Windows для сборки рекомендуется короткий путь без кириллицы, например `C:/tmp/vaw-meter`.
+On Windows, use a short ASCII-only build path, such as `C:/tmp/vaw-meter`.
 
-## Управление одним энкодером
+## One encoder, all controls
 
-В обычном режиме **ток находится слева, напряжение — справа**.
+In normal measurement mode, **current is on the left and voltage is on the right**.
 
-| Действие | Результат |
+| Action | Result |
 |---|---|
-| Одно короткое нажатие | Калибровка напряжения |
-| Следующее короткое нажатие | Калибровка тока |
-| Ещё одно короткое нажатие | Возврат к измерениям; при первичной настройке — подтверждение глобального коэффициента тока |
-| Двойное короткое нажатие из режима измерений | Меню параметров |
-| Удержание более 0,8 с с отпусканием | Вход в меню параметров; из меню — выход с сохранением |
-| Вращение в меню | Выбор параметра |
-| Короткое нажатие в меню | Включение или завершение редактирования |
+| One short press | Voltage calibration |
+| The next short press | Current calibration |
+| Another short press | Return to measurements; during initial current calibration, confirm the global current coefficient |
+| Double short press from measurement mode | Open the settings menu |
+| Hold for more than 0.8 s, then release | Open the settings menu; inside the menu, exit and save |
+| Turn the encoder in the menu | Select a setting |
+| Short press in the menu | Start or finish editing |
 
-При редактировании значение справа мигает. Подробная [таблица всех 19 параметров](docs/settings.md) вынесена отдельно.
+The right-hand value blinks while being edited. See the complete [19-item settings table](docs/en/settings.md).
 
-> **Глобальная калибровка:** включите прибор с зажатой кнопкой — слева появится `GU`, справа напряжение. Стартовое удержание и его отпускание не считаются нажатием. После отпускания кнопки настройте напряжение: новое короткое нажатие сохранит его коэффициент и сразу переведёт в `GA` (ток слева, метка справа). Следующее нажатие сохранит коэффициент тока и вернёт измерения. Перезапуска между этапами нет. [Подробная инструкция](docs/calibration.md).
+> **Global calibration:** power on with the encoder button held. `GU` appears on the left and voltage on the right. The startup hold and release do not count as a click. Release the button, adjust the voltage, then make a new short press to save its coefficient and move directly to `GA` (current on the left, label on the right). The next press saves the current coefficient and returns to measurements. There is no restart between stages. [Step-by-step guide](docs/en/calibration.md).
 
-## Как устроена прошивка
+## Firmware structure
 
 ```mermaid
 flowchart LR
-    INA[INA226] --> CAL[Глобальная и локальная калибровка]
-    CAL --> FILTER[Адаптивные фильтры]
-    FILTER --> MAX[MAX7219 · ток и напряжение]
-    ENC[Энкодер] --> CAL
-    ENC --> MENU[Меню настроек]
-    MENU --> MEM[EEPROM во Flash]
+    INA[INA226] --> CAL[Global and local calibration]
+    CAL --> FILTER[Adaptive filters]
+    FILTER --> MAX[MAX7219 · current and voltage]
+    ENC[Rotary encoder] --> CAL
+    ENC --> MENU[Settings menu]
+    MENU --> MEM[EEPROM emulation in Flash]
     CAL --> MEM
-    TEMP[2 × DS18B20] --> FAN[2 × ШИМ вентилятора]
+    TEMP[2 × DS18B20] --> FAN[2 × fan PWM]
 ```
 
-| Файл | Назначение |
+| File | Purpose |
 |---|---|
-| [main.cpp](platformio/src/main.cpp) | Основной цикл, измерения, реле и индикация |
-| [Calibration.h](platformio/include/Calibration.h) | Глобальные и локальные коэффициенты, интерполяция, хранение калибровки |
-| [MeasurementFilters.h](platformio/include/MeasurementFilters.h) | Адаптивная медианная фильтрация |
-| [EncoderInput.h](platformio/include/EncoderInput.h) | События энкодера и ускорение регулировки |
-| [INA226_mod.h](platformio/include/INA226_mod.h) | Активный драйвер INA226 |
-| [memory_view.cpp](platformio/src/memory_view.cpp) | Меню параметров |
-| [temp_fan.cpp](platformio/src/temp_fan.cpp) | Температура и управление вентиляторами |
-| [eep_new.h](platformio/src/eep_new.h) | Хранение настроек прибора и чтение старого формата |
+| [main.cpp](platformio/src/main.cpp) | Main loop, measurements, relays, and display |
+| [Calibration.h](platformio/include/Calibration.h) | Global and local coefficients, interpolation, and calibration storage |
+| [MeasurementFilters.h](platformio/include/MeasurementFilters.h) | Adaptive median filtering |
+| [EncoderInput.h](platformio/include/EncoderInput.h) | Encoder events and adjustment acceleration |
+| [INA226_mod.h](platformio/include/INA226_mod.h) | Active INA226 driver |
+| [memory_view.cpp](platformio/src/memory_view.cpp) | Settings menu |
+| [temp_fan.cpp](platformio/src/temp_fan.cpp) | Temperature acquisition and fan control |
+| [eep_new.h](platformio/src/eep_new.h) | Device settings storage and legacy format loading |
 
-Старые файлы и таблицы сохранены для совместимости. `filters.cpp` исключён из сборки; рабочая фильтрация находится в `MeasurementFilters.h`. Библиотека `lib/INA226-master` не является активным измерительным драйвером.
+Legacy files and tables are retained for compatibility. `filters.cpp` is excluded from the build; active filtering is implemented in `MeasurementFilters.h`. The `lib/INA226-master` library is not the active measurement driver.
 
-## Документация
+## Documentation
 
-- [Аппаратная часть и распиновка](docs/hardware.md)
-- [Глобальная и локальная калибровка](docs/calibration.md)
-- [Меню настроек: 19 параметров](docs/settings.md)
-- [Каталог фотографий и схем](docs/media.md)
+| Guide | English | Русский |
+|---|---|---|
+| Hardware and pinout | [Read](docs/en/hardware.md) | [Читать](docs/hardware.md) |
+| Global and local calibration | [Read](docs/en/calibration.md) | [Читать](docs/calibration.md) |
+| All 19 settings | [Read](docs/en/settings.md) | [Читать](docs/settings.md) |
+| Photos and schematics | [Read](docs/en/media.md) | [Читать](docs/media.md) |
 
-## Статус и ограничения
+## Status and limitations
 
-Проект находится в экспериментальном состоянии. Перед повторением конструкции требуется сверить аппаратную часть со своим блоком питания.
+This is an experimental hardware and firmware project. Check the hardware against your particular power supply before reproducing the design.
 
-- Пункт «критическая температура радиатора» хранится в настройках, но в текущем коде **не реализует аварийное отключение**.
-- Пины реле и температурные пороги требуют проверки при адаптации к другому БП.
-- Новая сетка калибровки не использует старые локальные коэффициенты MAX41: после перехода на неё измерения нужно откалибровать заново.
+- The heatsink critical-temperature setting is stored, but it **does not currently implement an emergency shutdown**.
+- Verify relay pin assignments and temperature thresholds when adapting the module to a different power supply.
+- The new calibration grid does not reuse the old MAX41 local coefficients. Recalibrate the measurement channels after migrating to it.
 
-Для замечаний и результатов повторения используйте [Issues](https://github.com/Spectrum-Man85/VAW_metr_stm32_max7219_-ps-305d-/issues). Укажите модель платы, шунт, программатор и шаги воспроизведения; к вопросу по монтажу приложите фотографию.
+Use [Issues](https://github.com/Spectrum-Man85/VAW_metr_stm32_max7219_-ps-305d-/issues) to report problems or share your build. Include your board model, shunt value, programmer, and reproduction steps. For wiring questions, include a photograph.
 
-## Лицензирование
+## Licensing
 
-Лицензия на собственный код проекта пока не указана. Сторонние файлы содержат свои лицензии и уведомления об авторстве; они сохраняются в исходниках. Публичная доступность репозитория сама по себе не заменяет выбранную автором лицензию.
+A license for the project's own code has not yet been specified. Third-party files retain their respective license and copyright notices in the source tree. Public repository visibility does not replace a license chosen by the author.

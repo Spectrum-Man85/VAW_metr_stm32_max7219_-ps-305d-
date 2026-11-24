@@ -1,6 +1,8 @@
 # Калибровка измерений
 
-[← Главная страница](../README.md) · [Подключение](hardware.md) · [Меню](settings.md)
+[English](en/calibration.md) · **Русский**
+
+[← Главная страница](../README.ru.md) · [Подключение](hardware.md) · [Меню](settings.md)
 
 ## Два уровня поправок
 

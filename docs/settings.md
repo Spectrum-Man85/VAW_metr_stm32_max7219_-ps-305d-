@@ -1,6 +1,8 @@
 # Меню настроек
 
-[← Главная страница](../README.md) · [Калибровка](calibration.md) · [Подключение](hardware.md)
+[English](en/settings.md) · **Русский**
+
+[← Главная страница](../README.ru.md) · [Калибровка](calibration.md) · [Подключение](hardware.md)
 
 ## Вход и управление
 
