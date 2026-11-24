@@ -1,0 +1,28 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^platformio run --verbose 2>&1 \\| Select-String -Pattern \"SUCCESS\\|ERROR\\|error\" -Context 2$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^if \\(Test-Path \\.pio\\\\penv\\\\Scripts\\\\platformio\\.exe\\) \\{ & \\.\\\\\\.pio\\\\penv\\\\Scripts\\\\platformio\\.exe run \\} else \\{ Write-Host 'PlatformIO executable not found'; Get-ChildItem \\.pio -Recurse -Filter platformio\\.exe \\| Select-Object -First 5 \\}$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^Get-Command platformio -ErrorAction SilentlyContinue \\| Select-Object Source,CommandType; if \\(\\$\\?\\) \\{ platformio --version; platformio run \\} else \\{ python -m platformio --version; python -m platformio run \\}$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^platformio run$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^Get-Process \\| Where-Object \\{ \\$_\\.ProcessName -match 'python\\|platformio\\|scons\\|ld\\|gcc\\|arm-none-eabi\\|Code' \\} \\| Select-Object Id,ProcessName,Path \\| Format-Table -AutoSize$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^platformio run -e genericSTM32F103C8$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}
