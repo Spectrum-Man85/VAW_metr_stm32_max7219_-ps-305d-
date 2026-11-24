@@ -1063,6 +1063,7 @@ class CalibrationController {
                   true, currentBaseCalibrationCompleted_);
     if (result == CalibrationEepromTransactionResult::kSaved) {
       voltageBaseCalibrationCompleted_ = true;
+      firstVoltageCalibrationPending_ = false;
     }
     return result;
   }

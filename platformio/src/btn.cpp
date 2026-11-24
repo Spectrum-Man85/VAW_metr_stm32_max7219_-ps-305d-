@@ -41,6 +41,8 @@ static const unsigned long BTN_MULTI_CLICK_GAP_MS = 400;
 static const uint8_t BTN_MAX_CLICK_COUNT = 5;
 
 static bool btnInitialized = false;
+static bool waitingForInitialRelease = false;
+static unsigned long initialReleaseChangedAt = 0;
 static unsigned long pressStartTime = 0;
 static unsigned long releaseTime = 0;
 static unsigned long lastEventTime = 0;
@@ -179,7 +181,10 @@ void btnInit()
   buttonLevel = prevBtnLevel;
   buttonEvent = false;
   buttonEventTime = millis();
-  pressStartTime = (prevBtnLevel == LOW) ? buttonEventTime : 0;
+  // A button held during startup is never a click, regardless of hold duration.
+  waitingForInitialRelease = prevBtnLevel == LOW;
+  initialReleaseChangedAt = buttonEventTime;
+  pressStartTime = 0;
   releaseTime = 0;
   lastEventTime = 0;
   multiTimerStart = 0;
@@ -204,6 +209,20 @@ void btn()
   }
 
   unsigned long now = millis();
+  if (waitingForInitialRelease) {
+    // Poll the physical level while the main loop keeps rendering measurements.
+    const bool released = digitalRead(Key) == HIGH;
+    if (!released || prevBtnLevel == LOW) initialReleaseChangedAt = now;
+    prevBtnLevel = released ? HIGH : LOW;
+    noInterrupts();
+    buttonEvent = false;
+    interrupts();
+    if (released && now - initialReleaseChangedAt >= BTN_DEBOUNCE_MS) {
+      btnInit();
+      lastEventTime = now;
+    }
+    return;
+  }
   bool hasEvent = false;
   bool level = prevBtnLevel;
   unsigned long eventTime = now;

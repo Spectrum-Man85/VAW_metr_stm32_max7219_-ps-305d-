@@ -19,6 +19,7 @@ bool measurementValid = false;
 void syncCalibrationBases();
 void beginCurrentCalibration();
 bool completeBaseCalibration();
+void resetCalibrationEncoder();
 
 #include "Wire.h"
 
@@ -657,11 +658,24 @@ bool inaMeasurementsReady()
 
 
 
+// MAX7219 bits: DP A B C D E F G. Center the two-letter label.
+void displayGlobalCalibrationLabel(int highDigit, bool voltage)
+{
+  lc.setRow(0, highDigit, 0x00);
+  lc.setRow(0, highDigit - 1, 0x5E);  // G
+  lc.setRow(0, highDigit - 2, voltage ? 0x3E : 0x77);  // U / A
+  lc.setRow(0, highDigit - 3, 0x00);
+}
+
 void if_t_lcd_m1_v()
 {
   if (e_mode == 1)    // обновление дисплея в режиме 1
   {
-    displayLeftNumber(step_v );
+    if (calibration.firstVoltageCalibrationPending()) {
+      displayGlobalCalibrationLabel(7, true);  // GU instead of current
+    } else {
+      displayLeftNumber(step_v );
+    }
     displayRightFloat(vv);
   }
   
@@ -671,7 +685,11 @@ void if_t_lcd_m1_a()
 {
   if (e_mode == 1)    // обновление дисплея в режиме 1
   {
-    displayRightNumber(step_a );
+    if (calibration.firstCurrentCalibrationPending()) {
+      displayGlobalCalibrationLabel(3, false);  // GA instead of voltage
+    } else {
+      displayRightNumber(step_a );
+    }
     displayLeftFloat(aa);
   }
   
@@ -881,15 +899,29 @@ void beginCurrentCalibration() {
 bool completeBaseCalibration() {
   if (calibration.firstVoltageCalibrationPending()) {
     if (calibration.finishFirstVoltageCalibration() != CalibrationEepromTransactionResult::kSaved) return false;
-    IWatchdog.reload();
-    NVIC_SystemReset();
-    return false;
+    // Continue the same calibration session directly from GU to GA.
+    e_mode = 1;
+    A_mode = true;
+    beginCurrentCalibration();
+    syncCalibrationBases();
+    e_mode_time = millis();
+    calibration.noteEncoderActivity(e_mode_time);
+    setInaAveraging(ina226_slow_avg);
+    resetInaReadTimer();
+    clearLeft4();
+    clearRight4();
+    if_t_lcd_m1_a();
+    return true;
   }
   if (calibration.firstCurrentCalibrationPending()) {
     if (!calibration.finishFirstCurrentCalibration()) return false;
     e_mode = 0;
+    A_mode = false;
+    syncCalibrationBases();
+    resetCalibrationEncoder();
     setInaAveraging(ina226_norm_avg);
     resetInaReadTimer();
+    print_max(vv, aa);
     return true;
   }
   return false;

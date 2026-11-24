@@ -46,6 +46,7 @@ int main() {
   auto v=c.adjustVoltage(5.0f,true,1);
   CHECK(v.changed && v.displayDigits==5001);
   CHECK(c.finishFirstVoltageCalibration()==CalibrationEepromTransactionResult::kSaved);
+  CHECK(!c.firstVoltageCalibrationPending());
   CHECK(c.storageForTest().bytes[900]==123);
   c.beginStorage();
   CHECK(!c.firstVoltageCalibrationPending());
